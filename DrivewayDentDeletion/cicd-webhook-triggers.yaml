@@ -451,7 +451,7 @@ spec:
     - --namespace
     - mq
     - --set
-    - license=accept,log.debug=false,qmPVC.enabled=false,logPVC.enabled=false,tls.hostname={{CP_CONSOLE}},trace.strmqm=false,selectedCluster[0].label=local-cluster,selectedCluster[0].value=local-cluster,selectedCluster[0].ip={{CP_CONSOLE}},selectedCluster[0].namespace=local-cluster,queueManager.multiInstance=false,odTracingConfig.enabled=false,odTracingConfig.odTracingNamespace=tracing,pki.keys[0].name=default,pki.keys[0].secret.secretName=mqcert,pki.keys[0].secret.items[0]=tls.key,pki.keys[0].secret.items[0]=tls.crt,image.repository=image-registry.openshift-image-registry.svc:5000/mq/mq-ddd,image.tag=$(params.imageTag),image.pullPolicy=Always
+    - license=accept,log.debug=false,qmPVC.enabled=false,logPVC.enabled=false,tls.hostname={{CP_CONSOLE}},trace.strmqm=false,selectedCluster[0].label=local-cluster,selectedCluster[0].value=local-cluster,selectedCluster[0].ip={{CP_CONSOLE}},selectedCluster[0].namespace=local-cluster,queueManager.multiInstance=false,odTracingConfig.enabled=false,odTracingConfig.odTracingNamespace=tracing,pki.keys[0].name=default,pki.keys[0].secret.secretName=mqcert,pki.keys[0].secret.items[0]=tls.key,pki.keys[0].secret.items[0]=tls.crt,image.repository=image-registry.openshift-image-registry.svc:5000/mq/mq-ddd,image.tag=$(params.imageTag),image.pullPolicy=Always,pki.trust[0].name=app,pki.trust[0].secret.secretName=mqcert,pki.trust[0].secret.items[0]=app.crt
     - --tls
     - --install
     - --debug
