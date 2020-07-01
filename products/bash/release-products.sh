@@ -107,6 +107,10 @@ if ! cloudctl login -a https://${cp_console} -u ${cp_username} -p "${cp_password
     exit 1
 fi
 
+echo "Print kubeconfig after cloudctl login in release-products.sh"
+oc config view --flatten=true --minify=true > ${PWD}/tmp2/kubeconfig.yaml
+cat ${PWD}/tmp2/kubeconfig.yaml
+
 # Add the chart repo
 chart_repo=ibm-entitled-charts
 helm repo add ${chart_repo} https://raw.githubusercontent.com/IBM/charts/master/repo/entitled/

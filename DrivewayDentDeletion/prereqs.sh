@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# print kubeconfig and ca.pem
+echo "Print kubeconfig and ca.pem of install.sh in prereqs.sh"
 cat ./kubeconfig.json
 cat ./ca.pem
 
