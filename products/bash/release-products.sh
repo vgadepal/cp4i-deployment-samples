@@ -108,6 +108,7 @@ if ! cloudctl login -a https://${cp_console} -u ${cp_username} -p "${cp_password
 fi
 
 echo "Print kubeconfig after cloudctl login in release-products.sh"
+mkdir -p ${PWD}/tmp2
 oc config view --flatten=true --minify=true > ${PWD}/tmp2/kubeconfig.yaml
 cat ${PWD}/tmp2/kubeconfig.yaml
 
