@@ -72,7 +72,6 @@ zip -r ${PWD}/DefaultPolicies/policyproject.zip ${PWD}/DefaultPolicies/
 
 echo "INFO: encoding the policy project"
 temp=$(base64 --wrap=0 ${PWD}/DefaultPolicies/policyproject.zip)
-echo $temp
 
 configyaml="\
 apiVersion: appconnect.ibm.com/v1beta1
@@ -84,7 +83,6 @@ spec:
   contents: "$temp"
   type: policyproject
 "
-
 echo "${configyaml}" > ${PWD}/tmp/policy-project-config.yaml
 echo "INFO: Output -> policy-project-config.yaml"
 cat ${PWD}/tmp/policy-project-config.yaml
