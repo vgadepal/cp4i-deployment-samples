@@ -68,7 +68,7 @@ ls ${PWD}/DefaultPolicies
 #echo "INFO: Installing the zip utility"
 #yum -y install zip
 
-zip -r ${PWD}/DefaultPolicies/policyproject.zip ${PWD}/DefaultPolicies/
+zip -r DefaultPolicies/policyproject.zip DefaultPolicies/
 
 echo "INFO: encoding the policy project"
 temp=$(base64 --wrap=0 ${PWD}/DefaultPolicies/policyproject.zip)
