@@ -34,7 +34,7 @@ while getopts "n:r:e:" opt; do
       ;;
     r ) is_release_name="$OPTARG"
       ;;
-    e ) is_release_name="$OPTARG"
+    e ) is_image_name="$OPTARG"
       ;;
     \? ) usage; exit
       ;;
@@ -51,7 +51,7 @@ spec:
   pod:
    containers:
      runtime:
-       image: image-registry.openshift-image-registry.svc:5000/cp4i/ace-11.0.0.9-r2:new-1
+       image: ${is_image_name}
   configurations:
   - policy-bernie-test
   designerFlowsOperationMode: disabled
