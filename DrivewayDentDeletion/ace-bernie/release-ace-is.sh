@@ -53,7 +53,7 @@ spec:
      runtime:
        image: ${is_image_name}
   configurations:
-  - policy-bernie-test
+  - ace-policyproject
   designerFlowsOperationMode: disabled
   license:
     accept: true

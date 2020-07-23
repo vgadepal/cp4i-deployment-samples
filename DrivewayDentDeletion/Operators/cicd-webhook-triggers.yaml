@@ -125,13 +125,13 @@ spec:
         name: main-pipeline
       serviceAccountNames:
         - taskName: deploy-ace-int-server-ace-api
-          serviceAccountName: cicd-pipeline
+          serviceAccountName: cicd-ace-sa
         - taskName: deploy-ace-int-server-ace-chris
-          serviceAccountName: cicd-pipeline
+          serviceAccountName: cicd-ace-sa
         - taskName: deploy-ace-int-server-ace-acme
-          serviceAccountName: cicd-pipeline
+          serviceAccountName: cicd-ace-sa
         - taskName: deploy-ace-int-server-ace-bernie
-          serviceAccountName: cicd-pipeline
+          serviceAccountName: cicd-ace-sa
       resources:
       - name: git-source
         resourceRef:
@@ -147,7 +147,7 @@ kind: EventListener
 metadata:
   name: main-trigger
 spec:
-  serviceAccountName: cicd-el
+  serviceAccountName: cicd-pipeline
   triggers:
   - template:
       name: main-triggertemplate
@@ -222,3 +222,36 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: tekton-triggers-role
+
+---
+# Ace Integration Service account configuration
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ace-int-srv-role
+rules:
+# Permissions for appconnect integration server
+- apiGroups: ["appconnect.ibm.com"]
+  resources: ["designerauthorings", "dashboards", "switchservers", "configurations", "integrationservers"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cicd-ace-sa
+secrets:
+  - name: ibm-entitlement-key
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ace-int-srv-rolebinding
+subjects:
+- kind: ServiceAccount
+  name: cicd-ace-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ace-int-srv-role
