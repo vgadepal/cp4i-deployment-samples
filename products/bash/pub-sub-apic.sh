@@ -166,7 +166,7 @@ RES=$(curl -kLsS https://$API_MANAGER_EP/api/catalogs/$ORG/$CATALOG/configured-c
   -H "accept: application/json" \
   -H "authorization: Bearer ${TOKEN}")
 handle_res "${RES}"
-USER_REGISTRY_URL=$(echo "${OUTPUT}" | jq -r ".results[0].user_registry_url")
+USER_REGISTRY_URL=$(echo "${OUTPUT}" | $JQ -r ".results[0].user_registry_url")
 $DEBUG && echo "[DEBUG] User registry url: ${USER_REGISTRY_URL}"
 echo -e "[INFO] ${tick} Got configured catalog user registry url for ${ORG}-catalog"
 
@@ -184,7 +184,7 @@ RES=$(curl -kLsS -X POST $USER_REGISTRY_URL/users \
     \"password\": \"!n0r1t5@C\"
 }")
 handle_res "${RES}"
-OWNER_URL=$(echo "${OUTPUT}" | jq -r ".url")
+OWNER_URL=$(echo "${OUTPUT}" | $JQ -r ".url")
 $DEBUG && echo "[DEBUG] Owner url: ${OWNER_URL}"
 echo -e "[INFO] ${tick} Consumer org owner created"
 
@@ -221,7 +221,7 @@ RES=$(curl -kLsS https://$API_MANAGER_EP/api/catalogs/$ORG/$CATALOG/products/$PR
   -H "accept: application/json" \
   -H "authorization: Bearer ${TOKEN}")
 handle_res "${RES}"
-PRODUCT_URL=$(echo "${OUTPUT}" | jq -r ".results[0].url")
+PRODUCT_URL=$(echo "${OUTPUT}" | $JQ -r ".results[0].url")
 $DEBUG && echo "[DEBUG] Product url: ${PRODUCT_URL}"
 echo -e "[INFO] ${tick} Got product url"
 
