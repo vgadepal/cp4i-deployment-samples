@@ -35,7 +35,7 @@
 # ↡ publish product to catalog
 
 function usage {
-  echo "Usage: $0 -e <environment> -n <namespace> -a <apic_namespace> -r <release> -d"
+  echo "Usage: $0 -e <environment> -n <namespace> -s <namespace_suffix> -r <release> -d"
 }
 
 CURRENT_DIR=$(dirname $0)
@@ -43,17 +43,14 @@ TICK="\xE2\x9C\x85"
 CROSS="\xE2\x9D\x8C"
 ENVIRONMENT="dev"
 NAMESPACE="cp4i"
-APIC_NAMESPACE=$NAMESPACE
 RELEASE="ademo"
 DEBUG=false
 
-while getopts "e:n:a:r:d" opt; do
+while getopts "e:n:r:d" opt; do
   case ${opt} in
     e ) ENVIRONMENT="$OPTARG"
       ;;
-    n ) NAMESPACE="$OPTARG"
-      ;;
-    a ) APIC_NAMESPACE="$OPTARG"
+    n ) MAIN_NAMESPACE="$OPTARG"
       ;;
     r ) RELEASE="$OPTARG"
       ;;
@@ -101,22 +98,11 @@ echo "[INFO]  jq version: $($JQ --version)"
 
 # Gather info from cluster resources
 echo "[INFO]  Gathering cluster info..."
+APIC_NAMESPACE=${MAIN_NAMESPACE}
+NAMESPACE=$([[ $ENVIRONMENT == "dev" ]] && echo "${MAIN_NAMESPACE}" || echo "${MAIN_NAMESPACE}-ddd-test")
 PLATFORM_API_EP=$(oc get route -n $APIC_NAMESPACE ${RELEASE}-mgmt-platform-api -o jsonpath="{.spec.host}")
 [[ -z $PLATFORM_API_EP ]] && echo -e "[ERROR] ${CROSS} APIC platform api route doesn't exit" && exit 1
 $DEBUG && echo "[DEBUG] PLATFORM_API_EP=${PLATFORM_API_EP}"
-# for i in `seq 1 5`; do
-#   ACE_API_ROUTE=$(oc get routes | grep -i ace-api-int-srv-http-$NAMESPACE | awk '{print $2}')
-#   if [[ -z $ACE_API_ROUTE ]]; then
-#     echo "Waiting for ace api route (Attempt $i of 5)."
-#     echo "Checking again in one minute..."
-#     sleep 60
-#   else
-#     $DEBUG && echo "[DEBUG] ACE_API_ROUTE=${ACE_API_ROUTE}"
-#     break
-#   fi
-# done
-# [[ -z $ACE_API_ROUTE ]] && echo -e "[ERROR] ${CROSS} ace api route doesn't exit" && exit 1
-# echo -e "[INFO]  ${TICK} Cluster info gathered"
 
 for i in `seq 1 5`; do
   ACE_API=$(oc get svc ace-api-int-srv-is -n ${NAMESPACE} -o jsonpath="{.metadata.name}")
