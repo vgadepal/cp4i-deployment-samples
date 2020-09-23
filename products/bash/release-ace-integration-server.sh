@@ -61,8 +61,8 @@ while getopts "n:r:i:z:t" opt; do
 done
 
 if [ "$tracing_enabled" == "true" ] ; then
-   if [ -z "$tracing_namespace" ]; then tracing_namespace=${namespace} ; fi  
-else 
+   if [ -z "$tracing_namespace" ]; then tracing_namespace=${namespace} ; fi
+else
     # assgining value to tracing_namespace b/c empty values causes CR to throw an error
     tracing_namespace=${namespace}
 fi
@@ -98,8 +98,6 @@ spec:
    containers:
      runtime:
        image: ${is_image_name}
-  configurations:
-  - ace-policyproject-ddd
   designerFlowsOperationMode: disabled
   license:
     accept: true
@@ -115,6 +113,11 @@ spec:
   tracing:
     enabled: ${tracing_enabled}
     namespace: ${tracing_namespace}
+  configurations:
+    - ace-keystore
+    - ace-policyproject-ddd
+    - ace-serverconf
+    - ace-setdbparms
 EOF
 
 timer=0
