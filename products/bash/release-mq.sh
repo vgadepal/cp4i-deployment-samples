@@ -132,7 +132,7 @@ kind: QueueManager
 metadata:
   name: ${release_name}
   namespace: ${namespace}
-  spec:
+spec:
   version: 9.2.0.0-r1
   license:
     accept: true
