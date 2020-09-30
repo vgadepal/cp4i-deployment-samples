@@ -60,7 +60,59 @@ while getopts "n:r:i:q:z:t" opt; do
   esac
 done
 
+echo "INFO: Setting up certs for MQ TLS"
+QM_KEY=$(cat $CURRENT_DIR/createcerts/server.key | base64 -w0)
+QM_CERT=$(cat $CURRENT_DIR/createcerts/server.crt | base64 -w0)
+APP_CERT=$(cat $CURRENT_DIR/createcerts/application.crt | base64 -w0)
 
+cat << EOF | oc apply -f -
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: mtlsmqsc
+  namespace: $namespace
+data:
+  example.mqsc: |-
+    DEFINE QLOCAL('APPQ')
+    DEFINE CHANNEL(MTLSQMCHL) CHLTYPE(SVRCONN) TRPTYPE(TCP) SSLCAUTH(REQUIRED) SSLCIPH('ECDHE_RSA_AES_128_CBC_SHA256')
+    ALTER AUTHINFO(SYSTEM.DEFAULT.AUTHINFO.IDPWOS) AUTHTYPE(IDPWOS) ADOPTCTX(YES) CHCKCLNT(OPTIONAL) CHCKLOCL(OPTIONAL) AUTHENMD(OS)
+    SET CHLAUTH('MTLSQMCHL') TYPE(SSLPEERMAP) SSLPEER('CN=application1,OU=app team1') USERSRC(MAP) MCAUSER('app1') ACTION(ADD)
+    REFRESH SECURITY TYPE(CONNAUTH)
+    SET AUTHREC PRINCIPAL('app1') OBJTYPE(QMGR) AUTHADD(CONNECT,INQ)
+    SET AUTHREC PROFILE('APPQ') PRINCIPAL('app1') OBJTYPE(QUEUE) AUTHADD(BROWSE,GET,INQ,PUT)
+  example.ini: |-
+    Service:
+      Name=AuthorizationService
+      EntryPoints=14
+      SecurityPolicy=User
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: mqcert
+  namespace: $namespace
+data:
+  tls.key: $QM_KEY
+  tls.crt: $QM_CERT
+  app.crt: $APP_CERT
+type: Opaque
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: ${release_name}-mq-mtls-traffic-operator-test
+  namespace: $namespace
+spec:
+  host: ${release_name}chl.chl.mq.ibm.com
+  to:
+    kind: Service
+    name: ${release_name}-ibm-mq
+  port:
+    targetPort: 1414
+  tls:
+    termination: passthrough
+EOF
 
 # when called from install.sh
 if [ "$tracing_enabled" == "true" ] ; then
@@ -80,29 +132,53 @@ kind: QueueManager
 metadata:
   name: ${release_name}
   namespace: ${namespace}
-spec:
+  spec:
+  version: 9.2.0.0-r1
   license:
     accept: true
     license: L-RJON-BN7PN3
-    use: NonProduction
-  queueManager:
-    name: ${qm_name}
-    storage:
-      queueManager:
-        type: ephemeral
+    use: "NonProduction"
+  pki:
+    keys:
+    - name: default
+      secret:
+        secretName: mqcert
+        items:
+          - tls.key
+          - tls.crt
+    trust:
+    - name: app
+      secret:
+        secretName: mqcert
+        items:
+          - app.crt
   template:
     pod:
       containers:
-        - env:
-            - name: MQSNOAUT
-              value: 'yes'
-          name: qmgr
-  version: 9.2.0.0-r1
-  web:
-    enabled: true
+       - name: qmgr
+         env:
+         - name: MQS_PERMIT_UNKNOWN_ID
+           value: "true"
   tracing:
     enabled: ${tracing_enabled}
     namespace: ${tracing_namespace}
+  web:
+    enabled: true
+  queueManager:
+    ini:
+      - configMap:
+          name: mtlsmqsc        
+          items: 
+            - example.ini
+    mqsc:
+      - configMap:
+          name: mtlsmqsc        
+          items: 
+            - example.mqsc
+    storage:
+      queueManager:
+        enabled: true
+        type: ephemeral
 EOF
 
 else
@@ -132,31 +208,55 @@ kind: QueueManager
 metadata:
   name: ${release_name}
   namespace: ${namespace}
-spec:
+  spec:
+  version: 9.2.0.0-r1
   license:
     accept: true
     license: L-RJON-BN7PN3
-    use: NonProduction
-  queueManager:
-    image: ${image_name}
-    imagePullPolicy: Always
-    name: ${qm_name}
-    storage:
-      queueManager:
-        type: ephemeral
+    use: "NonProduction"
+  pki:
+    keys:
+    - name: default
+      secret:
+        secretName: mqcert
+        items:
+          - tls.key
+          - tls.crt
+    trust:
+    - name: app
+      secret:
+        secretName: mqcert
+        items:
+          - app.crt
   template:
     pod:
       containers:
-        - env:
-            - name: MQSNOAUT
-              value: 'yes'
-          name: qmgr
-  version: 9.2.0.0-r1
-  web:
-    enabled: true
+       - name: qmgr
+         env:
+         - name: MQS_PERMIT_UNKNOWN_ID
+           value: "true"
   tracing:
     enabled: ${tracing_enabled}
     namespace: ${tracing_namespace}
+  web:
+    enabled: true
+  queueManager:
+    image: ${image_name}
+    imagePullPolicy: Always
+    ini:
+      - configMap:
+          name: mtlsmqsc        
+          items: 
+            - example.ini
+    mqsc:
+      - configMap:
+          name: mtlsmqsc        
+          items: 
+            - example.mqsc
+    storage:
+      queueManager:
+        enabled: true
+        type: ephemeral
 EOF
 
   # -------------------------------------- Register Tracing ---------------------------------------------------------------------
