@@ -61,9 +61,10 @@ while getopts "n:r:i:q:z:t" opt; do
 done
 
 echo "INFO: Setting up certs for MQ TLS"
-QM_KEY=$(cat $CURRENT_DIR/createcerts/server.key | base64 -w0)
-QM_CERT=$(cat $CURRENT_DIR/createcerts/server.crt | base64 -w0)
-APP_CERT=$(cat $CURRENT_DIR/createcerts/application.crt | base64 -w0)
+QM_KEY=$(cat $CURRENT_DIR/mq/createcerts/server.key | base64 -w0)
+QM_CERT=$(cat $CURRENT_DIR/mq/createcerts/server.crt | base64 -w0)
+APP_CERT=$(cat $CURRENT_DIR/mq/createcerts/application.crt | base64 -w0)
+QUEUE_CONF=$(cat $CURRENT_DIR/mq/mq_qm_conf.txt)
 
 cat << EOF | oc apply -f -
 ---
@@ -74,13 +75,7 @@ metadata:
   namespace: $namespace
 data:
   example.mqsc: |-
-    DEFINE QLOCAL('APPQ')
-    DEFINE CHANNEL(MTLSQMCHL) CHLTYPE(SVRCONN) TRPTYPE(TCP) SSLCAUTH(REQUIRED) SSLCIPH('ECDHE_RSA_AES_128_CBC_SHA256')
-    ALTER AUTHINFO(SYSTEM.DEFAULT.AUTHINFO.IDPWOS) AUTHTYPE(IDPWOS) ADOPTCTX(YES) CHCKCLNT(OPTIONAL) CHCKLOCL(OPTIONAL) AUTHENMD(OS)
-    SET CHLAUTH('MTLSQMCHL') TYPE(SSLPEERMAP) SSLPEER('CN=application1,OU=app team1') USERSRC(MAP) MCAUSER('app1') ACTION(ADD)
-    REFRESH SECURITY TYPE(CONNAUTH)
-    SET AUTHREC PRINCIPAL('app1') OBJTYPE(QMGR) AUTHADD(CONNECT,INQ)
-    SET AUTHREC PROFILE('APPQ') PRINCIPAL('app1') OBJTYPE(QUEUE) AUTHADD(BROWSE,GET,INQ,PUT)
+${QUEUE_CONF}
   example.ini: |-
     Service:
       Name=AuthorizationService
