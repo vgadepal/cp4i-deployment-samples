@@ -195,7 +195,7 @@ post_response=$(curl -ksw " %{http_code}" -X POST $HOST/quote \
   -d "{
     \"Name\": \"Jane Doe\",
     \"EMail\": \"janedoe@example.com\",
-    \"Address\": \"123 Fake Road\",
+    \"Address\": \"123FakeRoad\",
     \"USState\": \"FL\",
     \"LicensePlate\": \"MMM123\",
     \"DentLocations\": [
