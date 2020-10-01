@@ -99,7 +99,6 @@ metadata:
   name: mq-ddd-qm-mq-mtls
   namespace: $namespace
 spec:
-  host: mq-ddd-qm-mq.chl.mq.ibm.com
   to:
     kind: Service
     name: mq-ddd-qm-ibm-mq
