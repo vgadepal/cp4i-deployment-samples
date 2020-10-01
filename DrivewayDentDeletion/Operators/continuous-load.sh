@@ -78,7 +78,7 @@ DB_USER=$(echo $NAMESPACE | sed 's/-/_/g')_ddd
 DB_NAME=db_${DB_USER}
 DB_PASS=$(oc get secret -n $NAMESPACE postgres-credential --template={{.data.password}} | base64 --decode)
 DB_POD=$(oc get pod -n postgres -l name=postgresql -o jsonpath='{.items[].metadata.name}')
-DB_SVC="$(oc get cm -n postgres postgres-config -o json | jq '.data["postgres.env"] | split("\n  ")' | grep DATABASE_SERVICE_NAME | cut -d "=" -f 2- | tr -dc '[a-z0-9-]\n').postgres.svc.cluster.local"
+DB_SVC="postgresql.postgres.svc.cluster.local"
 echo "[INFO]  Username name is: '${DB_USER}'"
 echo "[INFO]  Database name is: '${DB_NAME}'"
 
@@ -117,9 +117,9 @@ while true; do
   post_response=$(curl -kLsS -w " %{http_code}" -X POST ${API_BASE_URL}/quote \
     -H "X-IBM-CLIENT-ID: ${API_CLIENT_ID}" \
     -d "{
-      \"Name\": \"Mickey Mouse\",
-      \"EMail\": \"MickeyMouse@us.ibm.com\",
-      \"Address\": \"30DisneyLand\",
+      \"Name\": \"Jane Doe\",
+      \"EMail\": \"janedoe@example.com\",
+      \"Address\": \"123 Fake Road\",
       \"USState\": \"FL\",
       \"LicensePlate\": \"MMM123\",
       \"DentLocations\": [
