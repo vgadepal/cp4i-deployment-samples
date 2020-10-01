@@ -87,12 +87,12 @@ cat << EOF > ${CURRENT_DIR}/DefaultPolicies/default.policyxml
     <connection>CLIENT</connection>
     <destinationQueueManagerName>QUICKSTART</destinationQueueManagerName>
     <queueManagerHostname>mq-ddd-qm-ibm-mq</queueManagerHostname>
-    <listenerPortNumber>1414</listenerPortNumber>
+    <listenerPortNumber>9443</listenerPortNumber>
     <channelName>ACE_SVRCONN</channelName>
     <securityIdentity></securityIdentity>
-    <useSSL>false</useSSL>
+    <useSSL>true</useSSL>
     <SSLPeerName></SSLPeerName>
-    <SSLCipherSpec></SSLCipherSpec>
+    <SSLCipherSpec>ECDHE_RSA_AES_128_CBC_SHA256</SSLCipherSpec>
   </policy>
 </policies>
 EOF
