@@ -118,6 +118,7 @@ else
 fi
 
 echo "[INFO] tracing is set to $tracing_enabled"
+image_name=""
 
 if [ -z $image_name ]; then
 
@@ -176,83 +177,83 @@ spec:
         type: ephemeral
 EOF
 
-else
+# else
 
-# --------------------------------------------------- FIND IMAGE TAG ---------------------------------------------------
+# # --------------------------------------------------- FIND IMAGE TAG ---------------------------------------------------
 
-echo -e "\n----------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+# echo -e "\n----------------------------------------------------------------------------------------------------------------------------------------------------------\n"
 
-imageTag=${image_name##*:}
+# imageTag=${image_name##*:}
 
-echo "INFO: Image tag found for '$release_name' is '$imageTag'"
-echo "INFO: Image is '$image_name'"
-echo "INFO: Release name is: '$release_name'"
+# echo "INFO: Image tag found for '$release_name' is '$imageTag'"
+# echo "INFO: Image is '$image_name'"
+# echo "INFO: Release name is: '$release_name'"
 
-if [[ -z "$imageTag" ]]; then
-  echo "ERROR: Failed to extract image tag from the end of '$image_name'"
-  exit 1
-fi
+# if [[ -z "$imageTag" ]]; then
+#   echo "ERROR: Failed to extract image tag from the end of '$image_name'"
+#   exit 1
+# fi
 
-echo -e "INFO: Going ahead to apply the CR for '$release_name'"
+# echo -e "INFO: Going ahead to apply the CR for '$release_name'"
 
-echo -e "\n----------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+# echo -e "\n----------------------------------------------------------------------------------------------------------------------------------------------------------\n"
 
-cat << EOF | oc apply -f -
-apiVersion: mq.ibm.com/v1beta1
-kind: QueueManager
-metadata:
-  name: ${release_name}
-  namespace: ${namespace}
-  spec:
-  version: 9.2.0.0-r1
-  license:
-    accept: true
-    license: L-RJON-BN7PN3
-    use: "NonProduction"
-  pki:
-    keys:
-    - name: default
-      secret:
-        secretName: mqcert
-        items:
-          - tls.key
-          - tls.crt
-    trust:
-    - name: app
-      secret:
-        secretName: mqcert
-        items:
-          - app.crt
-  template:
-    pod:
-      containers:
-       - name: qmgr
-         env:
-         - name: MQS_PERMIT_UNKNOWN_ID
-           value: "true"
-  tracing:
-    enabled: ${tracing_enabled}
-    namespace: ${tracing_namespace}
-  web:
-    enabled: true
-  queueManager:
-    image: ${image_name}
-    imagePullPolicy: Always
-    ini:
-      - configMap:
-          name: mtlsmqsc        
-          items: 
-            - example.ini
-    mqsc:
-      - configMap:
-          name: mtlsmqsc        
-          items: 
-            - example.mqsc
-    storage:
-      queueManager:
-        enabled: true
-        type: ephemeral
-EOF
+# cat << EOF | oc apply -f -
+# apiVersion: mq.ibm.com/v1beta1
+# kind: QueueManager
+# metadata:
+#   name: ${release_name}
+#   namespace: ${namespace}
+#   spec:
+#   version: 9.2.0.0-r1
+#   license:
+#     accept: true
+#     license: L-RJON-BN7PN3
+#     use: "NonProduction"
+#   pki:
+#     keys:
+#     - name: default
+#       secret:
+#         secretName: mqcert
+#         items:
+#           - tls.key
+#           - tls.crt
+#     trust:
+#     - name: app
+#       secret:
+#         secretName: mqcert
+#         items:
+#           - app.crt
+#   template:
+#     pod:
+#       containers:
+#        - name: qmgr
+#          env:
+#          - name: MQS_PERMIT_UNKNOWN_ID
+#            value: "true"
+#   tracing:
+#     enabled: ${tracing_enabled}
+#     namespace: ${tracing_namespace}
+#   web:
+#     enabled: true
+#   queueManager:
+#     image: ${image_name}
+#     imagePullPolicy: Always
+#     ini:
+#       - configMap:
+#           name: mtlsmqsc        
+#           items: 
+#             - example.ini
+#     mqsc:
+#       - configMap:
+#           name: mtlsmqsc        
+#           items: 
+#             - example.mqsc
+#     storage:
+#       queueManager:
+#         enabled: true
+#         type: ephemeral
+# EOF
 
   # -------------------------------------- Register Tracing ---------------------------------------------------------------------
 oc get secrets icp4i-od-store-cred -n ${namespace}
