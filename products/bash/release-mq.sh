@@ -96,10 +96,10 @@ type: Opaque
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: ${release_name}-mq-mtls-traffic-operator-test
+  name: mq-ddd-qm-mq-mtls
   namespace: $namespace
 spec:
-  host: ${release_name}chl.chl.mq.ibm.com
+  host: mq-ddd-qm-mq.chl.mq.ibm.com
   to:
     kind: Service
     name: mq-ddd-qm-ibm-mq
