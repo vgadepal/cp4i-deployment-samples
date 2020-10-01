@@ -30,3 +30,6 @@ rules:
 - apiGroups: [""]
   resources: ["pods", "pods/exec", "configmaps", "secrets", "serviceaccounts", "routes"]
   verbs: ["list", "get", "create", "delete"]
+- apiGroups: ["route.openshift.io"]
+  resources: ["pods", "pods/exec", "configmaps", "secrets", "serviceaccounts", "routes"]
+  verbs: ["list", "get", "create", "delete"]
