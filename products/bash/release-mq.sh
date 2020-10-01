@@ -102,7 +102,7 @@ spec:
   host: ${release_name}chl.chl.mq.ibm.com
   to:
     kind: Service
-    name: ${release_name}-ibm-mq
+    name: mq-ddd-qm-ibm-mq
   port:
     targetPort: 1414
   tls:
