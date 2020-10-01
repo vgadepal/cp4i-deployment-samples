@@ -92,20 +92,7 @@ data:
   tls.crt: $QM_CERT
   app.crt: $APP_CERT
 type: Opaque
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: mq-ddd-qm-mq-mtls
-  namespace: $namespace
-spec:
-  to:
-    kind: Service
-    name: mq-ddd-qm-ibm-mq
-  port:
-    targetPort: 1414
-  tls:
-    termination: passthrough
+
 EOF
 
 # when called from install.sh
