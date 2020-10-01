@@ -160,6 +160,7 @@ spec:
   web:
     enabled: true
   queueManager:
+    name: ${qm_name}
     ini:
       - configMap:
           name: mtlsmqsc        
