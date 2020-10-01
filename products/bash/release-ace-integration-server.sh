@@ -100,6 +100,11 @@ spec:
        image: ${is_image_name}
   configurations:
   - ace-policyproject-ddd
+  - application.kdb
+  - application.sth
+  - server.conf.demo.yaml
+  - setdbparms.demo.txt
+  - application.jks
   designerFlowsOperationMode: disabled
   license:
     accept: true
